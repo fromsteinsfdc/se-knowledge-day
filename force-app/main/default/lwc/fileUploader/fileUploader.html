@@ -1,0 +1,12 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <span ondragover={handleDragOver} ondrop={handleDrop}>
+        <lightning-card title="Upload CSV RFQ file">
+            <div class="slds-p-left_medium">
+                Drag file here
+            </div>
+        </lightning-card>
+    </span>
+</template>

@@ -1,0 +1,23 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner></lightning-spinner>
+    </template>
+    <div class="slds-grid slds-wrap slds-theme_default slds-grid_align-space">
+        <template for:each={members} for:item="member">
+            <article key={member.Id}
+                class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-4 slds-large-size_1-of-6 slds-text-align_center">
+                <img src={member.photoUrl}>
+                <p class="slds-text-heading_medium">{member.name}</p>
+                <lightning-button label="Open Report" class="slds-p-around_small"></lightning-button>
+                <!--<p class="slds-text-heading_small">{member.Title}</p>-->
+                <template if:true={member.report}>
+                    <lightning-button label="Open Report" variant="brand" data-user-id={member.Id}
+                        onclick={handleClick}></lightning-button>
+                </template>
+                <template if:true={member.Coach__c}>
+                    <p class="slds-text-color_error slds-text-heading_small">Coach</p>
+                </template>
+            </article>
+        </template>
+    </div>
+</template>

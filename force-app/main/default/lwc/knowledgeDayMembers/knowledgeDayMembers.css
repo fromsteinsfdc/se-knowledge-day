@@ -1,0 +1,29 @@
+img {
+    border-radius: 50%;
+}
+
+.smallBadge {
+    font-size: 80%;
+}
+
+.tabActions {
+    display: none;
+}
+
+.slds-vertical-tabs__nav-item:hover .tabActions {
+    display: block;
+}
+
+/*
+.colourPicker {
+    display: none;
+}
+
+.colourPicker:focus {
+    display: inline;
+}
+
+.slds-vertical-tabs__link:hover .colourPicker {
+    display: inline;
+}
+*/

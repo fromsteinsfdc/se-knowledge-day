@@ -1,0 +1,50 @@
+<template>
+    <template if:false={showAll}>
+        <p class="slds-text-heading_large slds-align_absolute-center">Presenters</p>
+    </template>
+    <div class="slds-grid slds-wrap slds-grid_align-space">
+        <template for:each={presenters} for:item="member">
+            <article key={member.id}
+                class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-4 slds-large-size_1-of-6 slds-text-align_center slds-p-bottom_medium">
+                <img src={member.photoUrl} ondragstart={handleDragStart} data-user-id={member.userId} draggable="true"
+                    style="width:100px;height:100px;">
+                <p class="slds-text-heading_medium">{member.name}</p>
+                <!--{showGroupMembership} - {showAllMembers} - {member.groupColour} - {member.isPresenter} - {member.isJudge}-->
+                <template if:true={showGroup}>
+                    <template if:true={member.groupName}>
+                        <p class="slds-badge" style={member.colourStyle}>
+                            {member.groupName}</p>
+                    </template>
+                    <template if:false={member.groupName}>
+                        <p class="slds-text-body_regular slds-text-color_error">{noGroupLabel}</p>
+                    </template>
+                    <template if:true={member.isPresenter}>
+                        <p class="slds-text-heading_small">{member.topic}</p>
+                    </template>
+                </template>
+                <template if:true={showReportButton}>
+                    <lightning-button label="Open Report" onclick={handleOpenReport} variant="brand"
+                        class="reportButton slds-p-around_x-small" data-report-id={member.reportId}></lightning-button>
+                </template>
+            </article>
+        </template>
+    </div>
+    <template if:false={showAll}>
+        <p class="slds-text-heading_medium slds-align_absolute-center slds-p-top_large">Observers</p>
+        <div class="slds-grid slds-wrap slds-grid_align-space">
+            <template for:each={nonPresenters} for:item="member">
+                <article key={member.id}
+                    class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-8 slds-large-size_1-of-12 slds-text-align_center">
+                    <lightning-avatar src={member.photoUrl} fallback-icon-name="standard:user" alternative-text={member.name} initials={member.initials}
+                    ondragstart={handleDragStart} data-user-id={member.userId} draggable="true" size="large"></lightning-avatar>
+                    <!--
+                    <img src={member.photoUrl} ondragstart={handleDragStart} data-user-id={member.userId}
+                        draggable="true" style="width:75px;height:75px;">
+                        -->
+                    <p class="slds-text-heading_small">{member.name}</p>
+                    <!--{showGroupMembership} - {showAllMembers} - {member.groupColour} - {member.isPresenter} - {member.isJudge}-->
+                </article>
+            </template>
+        </div>
+    </template>
+</template>

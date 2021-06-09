@@ -1,0 +1,11 @@
+img {
+    border-radius: 50%;
+}
+
+lightning-button {
+    visibility: hidden;
+}
+
+article:hover lightning-button {
+    visibility: visible;
+}

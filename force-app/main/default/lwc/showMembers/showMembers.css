@@ -1,0 +1,17 @@
+.smallBadge {
+    font-size: 80%;
+}
+
+img {
+    border-radius: 50%;
+    max-width: 100%;
+    height: auto;  
+}
+
+.reportButton {
+    display: none;
+}
+
+article:hover .reportButton {
+    display:block;
+}

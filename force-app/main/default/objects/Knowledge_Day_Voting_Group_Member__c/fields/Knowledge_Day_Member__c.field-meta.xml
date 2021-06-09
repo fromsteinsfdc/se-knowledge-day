@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Knowledge_Day_Member__c</fullName>
+    <externalId>false</externalId>
+    <label>Knowledge Day Member</label>
+    <referenceTo>Knowledge_Day_Member__c</referenceTo>
+    <relationshipLabel>Knowledge Day Voting Group Member</relationshipLabel>
+    <relationshipName>Knowledge_Day_Voting_Group_Member</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

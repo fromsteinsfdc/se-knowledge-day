@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Show_and_Tell_Report__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Show and Tell Report</label>
+    <referenceTo>Show_and_Tell_Report__c</referenceTo>
+    <relationshipLabel>Knowledge Day Members</relationshipLabel>
+    <relationshipName>Knowledge_Day_Members</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

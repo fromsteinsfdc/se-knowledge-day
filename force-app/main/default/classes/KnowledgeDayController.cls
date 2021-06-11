@@ -49,12 +49,23 @@ public without sharing class KnowledgeDayController {
 
     @AuraEnabled(cacheable=true)
     public static List<Knowledge_Day_Voting_Group__c> getVotingGroups(String kdId) {
-        return [SELECT Id, Name, IsActive__c, Colour_Hex_Code__c, (SELECT Is_Judge__c, Is_Presenter__c, Knowledge_Day_Member__c, Knowledge_Day_Member__r.User__c, Knowledge_Day_Member__r.User__r.Name, Knowledge_Day_Member__r.User__r.Name_formula__c, Knowledge_Day_Member__r.User__r.Title, Knowledge_Day_Member__r.User__r.MediumPhotoUrl, Knowledge_Day_Member__r.User__r.FullPhotoUrl FROM Knowledge_Day_Voting_Group_Member__r) FROM Knowledge_Day_Voting_Group__c WHERE Knowledge_Day__c = :kdId];
+        Knowledge_Day__c kd = [SELECT Current_Round__c FROM Knowledge_Day__c WHERE Id = :kdId];
+        return [SELECT Id, Name, IsActive__c, Colour_Hex_Code__c, (SELECT Is_Judge__c, Is_Presenter__c, Knowledge_Day_Member__c, Knowledge_Day_Member__r.User__c, Knowledge_Day_Member__r.User__r.Name, Knowledge_Day_Member__r.User__r.Name_formula__c, Knowledge_Day_Member__r.User__r.Title, Knowledge_Day_Member__r.User__r.MediumPhotoUrl, Knowledge_Day_Member__r.User__r.FullPhotoUrl FROM Knowledge_Day_Voting_Group_Member__r) FROM Knowledge_Day_Voting_Group__c WHERE Knowledge_Day__c = :kdId AND Round__c = :kd.Current_Round__c ORDER BY Name ASC];
     }
 
     @AuraEnabled
     public static List<Knowledge_Day_Voting_Group_Member__c> getVotingGroupMembers(String groupId) {
-        return [SELECT Is_Judge__c, Is_Presenter__c, Knowledge_Day_Member__r.Topic__c, Knowledge_Day_Member__r.Show_and_Tell_Report__r.Topic__c, Knowledge_Day_Member__c, Knowledge_Day_Member__r.User__c, Knowledge_Day_Member__r.User__r.Name, Knowledge_Day_Member__r.User__r.Name_formula__c, Knowledge_Day_Member__r.User__r.Title, Knowledge_Day_Member__r.User__r.MediumPhotoUrl, Knowledge_Day_Member__r.User__r.FullPhotoUrl FROM Knowledge_Day_Voting_Group_Member__c WHERE Voting_Group__c = :groupId ORDER BY Name ASC];
+        return [SELECT Is_Judge__c, Is_Presenter__c, Knowledge_Day_Member__r.Topic__c, Knowledge_Day_Member__r.Show_and_Tell_Report__r.Topic__c, Knowledge_Day_Member__c, Knowledge_Day_Member__r.User__c, Knowledge_Day_Member__r.User__r.Name, Knowledge_Day_Member__r.User__r.Name_formula__c, Knowledge_Day_Member__r.User__r.Title, Knowledge_Day_Member__r.User__r.MediumPhotoUrl, Knowledge_Day_Member__r.User__r.FullPhotoUrl, Has_Voted__c FROM Knowledge_Day_Voting_Group_Member__c WHERE Voting_Group__c = :groupId ORDER BY Name ASC];
+    }
+
+    @AuraEnabled
+    public static void handleVote(String votingMemberId, String votingForId) {
+        Knowledge_Day_Voting_Group_Member__c voter = [SELECT Id, Has_Voted__c FROM Knowledge_Day_Voting_Group_Member__c WHERE Id = :votingMemberId];
+        Knowledge_Day_Voting_Group_Member__c nominee = [SELECT Id, Vote_Count__c FROM Knowledge_Day_Voting_Group_Member__c WHERE Id = :votingForId];
+        voter.Has_Voted__c = true;
+        update voter;
+        nominee.Vote_Count__c = nominee.Vote_Count__c > 0 ? nominee.Vote_Count__c+1 : 1;
+        update nominee;
     }
 
     @AuraEnabled
@@ -62,7 +73,7 @@ public without sharing class KnowledgeDayController {
         String returnMessage = 'Test return message';
         System.debug('usersString = '+ usersString);
         
-        Account kdAccount = new Account(Name = 'MFG FY22 Q1 Knowledge Day');
+        Account kdAccount = new Account(Name = 'MFG FY22 Q2 Knowledge Day v1');
         insert kdAccount;
 
         List<KnowledgeDayUser> users = (List<KnowledgeDayUser>)JSON.deserialize(usersString, List<KnowledgeDayUser>.class);
@@ -71,7 +82,7 @@ public without sharing class KnowledgeDayController {
         for (KnowledgeDayUser u : users) {
             if (u.LastName == null)
                 continue;
-            Contact newContact = new Contact(Knowledge_Day_Contact__c = true, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email + 'z', AccountId = kdAccount.Id, KD_Photo_URL__c = u.FullPhotoUrl);
+            Contact newContact = new Contact(Knowledge_Day_Contact__c = true, FirstName = u.FirstName, LastName = u.LastName, Email = u.Email + 'z', AccountId = kdAccount.Id/*, KD_Photo_URL__c = u.FullPhotoUrl*/);
             newContacts.add(newContact);
             System.debug('user: '+ u);
             System.debug('-newContact: '+ newContact);
@@ -92,12 +103,29 @@ public without sharing class KnowledgeDayController {
             System.debug('username = '+ username);
             User newUser = new User(Knowledge_Day_User__c = true, ProfileId = memberProfileId, FirstName = c.FirstName, LastName = c.LastName, ContactId = c.Id, Username = username, 
                 Email = username, Alias = alias, TimeZoneSidKey = defaultTimeZone, LocaleSidKey = defaultLocale, EmailEncodingKey = defaultEmailEcoding, LanguageLocaleKey = defaultLanguageLocale, KD_Photo_URL__c = c.KD_Photo_URL__c);
+            newUser.CommunityNickname = newUser.Name;
             System.debug('newUser = '+ newUser);
             index++;
             newUsers.add(newUser);            
         }
         insert newUsers;
         return String.valueOf(users);
+    }
+
+    public static void addAccountContactsAsKnowledgeDayMembers(Id accountId) {
+        List<Account> accounts = [SELECT Knowledge_Day__c FROM Account WHERE Id =: accountId];
+        if (accounts.size() != 1)
+            return;
+        if (accounts[0].Knowledge_Day__c == null)
+            return;
+        Id knowledgeDayId = accounts[0].Knowledge_Day__c;
+        Map<Id, Contact> contacts = new Map<Id, Contact>([SELECT Id FROM Contact WHERE AccountId = :accountId]);
+        List<User> users = [SELECT Id FROM User WHERE ContactId IN :contacts.keySet()];
+        List<Knowledge_Day_Member__c> kdMembers = new List<Knowledge_Day_Member__c>();
+        for (User u : users) {
+            kdMembers.add(new Knowledge_Day_Member__c(User__c = u.Id, Knowledge_Day__c = knowledgeDayId));
+        }
+        insert kdMembers;
     }
 
     public static boolean isIdThisObject(String id, String objectName) {
@@ -121,7 +149,7 @@ public without sharing class KnowledgeDayController {
         update users;
         //delete [SELECT Id FROM Contact WHERE Knowledge_Day_Contact__c = true];
     }
-
+    
     public class KDMember {
         @AuraEnabled public String userId;
         @AuraEnabled public String kdId;
@@ -150,7 +178,70 @@ public without sharing class KnowledgeDayController {
 
         // taken from https://salesforce.stackexchange.com/questions/166947/creating-a-community-user-via-apex-from-a-contact/166958
         // u.CommunityNickname = 'nickname';
+    }
 
+    public static void createStatic(){
+        MetadataService.MetadataPort service = createService();     
+        MetadataService.StaticResource staticResource = new MetadataService.StaticResource();
+        staticResource.fullName = 'MyResource';
+        staticResource.contentType = 'text';
+        staticResource.cacheControl = 'public';
+        staticResource.content = EncodingUtil.base64Encode(Blob.valueOf('Static stuff'));
+        MetadataService.SaveResult[] results = service.createMetadata(new List<MetadataService.Metadata> { staticResource });    
+    }
 
+    @InvocableMethod(label='Create Static Resource from Content Document')
+    public static List<String> createStaticResourceFromContentDocument(List<List<Id>> contentDocumentIds) {
+        System.debug('contentDocumentIds = '+ contentDocumentIds);
+        Id contentDocumentId = contentDocumentIds[0][0];
+        ContentVersion vc = [SELECT Title, VersionData, FileType FROM ContentVersion WHERE ContentDocumentId =: contentDocumentId AND IsLatest = true];
+        String contentType;
+        if (vc.FileType == 'jpg' || vc.FileType == 'jpeg') {
+            contentType = 'image/jpeg';
+        } else if (vc.FileType == 'gif') {
+            contentType = 'image/gif';
+        } else if (vc.FileType == 'png') {
+            contentType = 'image/png';
+        } else {
+            contentType = 'text/html';
+        }
+
+        MetadataService.MetadataPort service = createService();     
+        MetadataService.StaticResource staticResource = new MetadataService.StaticResource();
+        staticResource.fullName = vc.Title.replaceAll('[^a-zA-Z0-9]', '');
+        List<StaticResource> existingResources = [SELECT Id FROM StaticResource WHERE Name = :staticResource.fullName];
+        if (existingResources.size() > 0) {
+            staticResource.fullName += '1';
+        }
+        staticResource.contentType = contentType;
+        staticResource.cacheControl = 'public';
+        // staticResource.content = EncodingUtil.base64Encode(Blob.valueOf('Static stuff'));
+        staticResource.content = EncodingUtil.base64Encode(vc.VersionData);
+        System.debug('about to save static resource = '+ staticResource);
+        MetadataService.SaveResult[] results = service.createMetadata(new List<MetadataService.Metadata> { staticResource });    
+        if (results[0].errors != null) {
+            for (MetadataService.Error error : results[0].errors) {
+                System.debug('error = '+ error.message);
+            }
+        }
+        List<StaticResource> resourceList = [SELECT Id, SystemModStamp FROM StaticResource WHERE Name = :staticResource.fullName];
+        System.debug('resourceList = '+ resourceList);
+        if (resourceList.size() == 1) {
+            String urlString = '/resource/' + resourceList[0].SystemModStamp.getTime() + '/' + staticResource.fullName;
+            return new List<String>{urlString};
+        } else {
+            System.debug('resourcelist.size = '+ resourceList.size());
+            return null;
+        }
+
+        
+    }
+
+    private static MetadataService.MetadataPort createService(){ 
+        MetadataService.MetadataPort service = new MetadataService.MetadataPort();
+        service.SessionHeader = new MetadataService.SessionHeader_element();
+        // service.SessionHeader.sessionId = UserInfo.getSessionId();
+        service.SessionHeader.sessionId = '00D5Y000002Stbb!ARAAQDHT1Qd4WLdGr8Rngw3V6yqudsgXIOuzDb_wE0kXFxhXTGvsfFDRnan6GAwJjW6IdTndk838j3BHrIIzJeAZ6U5doE6x';
+        return service;     
     }
 }

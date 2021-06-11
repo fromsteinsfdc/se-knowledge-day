@@ -81,16 +81,33 @@ export default class ShowMembers extends NavigationMixin(LightningElement) {
         });
         console.log(JSON.stringify(defaultValues));
         */
-       console.log('in open report');
-       console.log(event.currentTarget.dataset.reportId);
+       console.log('in open report');       
+        let existingId = event.currentTarget.dataset.reportId;
+        console.log('existingId = '+ existingId);
+        if (existingId) {
+            this[NavigationMixin.Navigate]({
+                type: 'standard__recordPage',
+                attributes: {
+                    recordId: event.currentTarget.dataset.reportId,
+                    actionName: 'edit'
+                }
+            });    
+        } else {
+            this[NavigationMixin.Navigate]({
+                type: 'standard__objectPage',
+                attributes: {
+                    objectApiName: 'Show_and_Tell_Report__c',
+                    actionName: 'new'
+                },
+                state: {
+                    defaultFieldValues: {
+                        Presenter__c: event.currentTarget.dataset.userId
+                    }
+                }
+            });
+        }
 
-        this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: {
-                recordId: event.currentTarget.dataset.reportId,
-                actionName: 'edit'
-            }
-        });
+        
 
     }
 }

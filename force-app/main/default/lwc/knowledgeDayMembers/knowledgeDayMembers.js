@@ -65,7 +65,7 @@ export default class KnowledgeDayMembers extends NavigationMixin(LightningElemen
                         let nameWords = this.name.split(' ');
                         let maxNumInitials = 20;
                         let initials = '';
-                        for (let i=0; i<Math.min(maxNumInitials,nameWords.length); i++) {
+                        for (let i = 0; i < Math.min(maxNumInitials, nameWords.length); i++) {
                             initials += nameWords[i].charAt(0).toUpperCase();
                         }
                         return initials;
@@ -87,7 +87,7 @@ export default class KnowledgeDayMembers extends NavigationMixin(LightningElemen
                         colour: group.Colour_Hex_Code__c || DEFAULT_BG_COLOUR
                     });
                     index++;
-                    console.log('group = '+ JSON.stringify(group));
+                    console.log('group = ' + JSON.stringify(group));
                 }
 
                 for (let group of this.groups) {
@@ -98,9 +98,9 @@ export default class KnowledgeDayMembers extends NavigationMixin(LightningElemen
                         member.groupName = group.name;
                         member.groupColour = group.colour;
                         member.isPresenter = groupMember.Is_Presenter__c,
-                        member.isJudge = groupMember.Is_Judge__c,
-    
-                        console.log(member.name +' group info set to '+ member.groupIndex, member.groupName, member.groupColour, member.isJudge, member.isPresenter)
+                            member.isJudge = groupMember.Is_Judge__c,
+
+                            console.log(member.name + ' group info set to ' + member.groupIndex, member.groupName, member.groupColour, member.isJudge, member.isPresenter)
                         /*
                         member.group = {
                             index: group.index,
@@ -172,10 +172,10 @@ export default class KnowledgeDayMembers extends NavigationMixin(LightningElemen
 
 
     handleSave() {
-        saveKnowledgeDayMembers({kdId: this.knowledgeDayId, jsonString: JSON.stringify(this.members)}).then(result => {
-            console.log('success: '+ result);
+        saveKnowledgeDayMembers({ kdId: this.knowledgeDayId, jsonString: JSON.stringify(this.members) }).then(result => {
+            console.log('success: ' + result);
         }).catch(error => {
-            console.log('error: '+ JSON.stringify(error));
+            console.log('error: ' + JSON.stringify(error));
         })
     }
 
@@ -202,15 +202,15 @@ export default class KnowledgeDayMembers extends NavigationMixin(LightningElemen
         let groupIndex = event.currentTarget.dataset.groupIndex;
         console.log('userId ' + userId + ' has been dropped into group ' + groupIndex);
         let member = this.members.find(el => { return el.userId === userId });
-        console.log('member = '+ JSON.stringify(member));
+        console.log('member = ' + JSON.stringify(member));
         member.groupIndex = groupIndex;
-        member.groupId = groupIndex >=0 ? this.groups[groupIndex].id : null;
-        member.groupName = groupIndex >=0 ? this.groups[groupIndex].name : null;
-        member.groupColour = groupIndex >=0 ? this.groups[groupIndex].colour : null;
+        member.groupId = groupIndex >= 0 ? this.groups[groupIndex].id : null;
+        member.groupName = groupIndex >= 0 ? this.groups[groupIndex].name : null;
+        member.groupColour = groupIndex >= 0 ? this.groups[groupIndex].colour : null;
         //this.members = this.members;
         //member.groupName = group.name;
         //member.groupColour = group.colour;
-        console.log('member now = '+ JSON.stringify(member));
+        console.log('member now = ' + JSON.stringify(member));
         /*
 
         
@@ -235,6 +235,28 @@ export default class KnowledgeDayMembers extends NavigationMixin(LightningElemen
             }
         }
         */
+    }
+
+    handleNewGroupModalOpen() {
+        console.log('in handleNewGroupModalOpen');
+        //this.template.querySelector('.newGroupModal').toggleModal();
+        this.template.querySelector('c-lwc-modal').open();
+    }
+
+    handleNewGroupModalSave(event) {
+        //let groupName = this.template.querySelector('.newGroupModal lightning-input');
+        let groupName = this.template.querySelector('c-lwc-modal lightning-input').value;
+        console.log(groupName);
+        if (groupName) {
+            this.groups.push({
+                index: this.groups.length,
+                name: groupName,
+                members: [],
+                colour: DEFAULT_BG_COLOUR
+            });
+        }
+        // this.template.querySelector('.newGroupModal').toggleModal();
+        this.template.querySelector('c-lwc-modal').close();
     }
 
     handleTabClick(event) {

@@ -1,0 +1,23 @@
+<template>
+    <template if:true={groupId}>
+        <div class="slds-grid slds-wrap slds-grid_align-center slds-text-heading_medium">
+            <template if:false={currentMember.Has_Voted__c}>
+                <div class="slds-col slds-size_1-of-1">
+                <lightning-radio-group options={members} label="Who are you voting for?" onchange={handleChange}>
+                </lightning-radio-group>
+            </div>
+                <br><br>
+                <template if:false={members.length}>
+                    Sadly, your group doesn't seem to have any eligible candidates just yet.
+                </template>
+                <div class="slds-col slds-size_1-of-1">
+
+                    <lightning-button label="Submit vote" onclick={handleVote}></lightning-button>
+                </div>
+            </template>
+            <template if:true={currentMember.Has_Voted__c}>
+                <img src={ivoted}>
+            </template>
+        </div>
+    </template>
+</template>

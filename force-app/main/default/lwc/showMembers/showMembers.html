@@ -24,7 +24,7 @@
                 </template>
                 <template if:true={showReportButton}>
                     <lightning-button label="Open Report" onclick={handleOpenReport} variant="brand"
-                        class="reportButton slds-p-around_x-small" data-report-id={member.reportId}></lightning-button>
+                        class="reportButton slds-p-around_x-small" data-report-id={member.reportId} data-user-id={member.userId}></lightning-button>
                 </template>
             </article>
         </template>

@@ -2,87 +2,65 @@
     <template if:true={isLoading}>
         <lightning-spinner></lightning-spinner>
     </template>
-    <template if:false={isLoading}>
-        <div class="slds-vertical-tabs">
-            <ul class="slds-vertical-tabs__nav" role="tablist">
-                <li class="slds-vertical-tabs__nav-item slds-is-active" title={allMembersLabel} role="presentation"
-                    onclick={handleTabClick} data-group-index="-1" ondrop={handleDrop} ondragover={handleDragOver}>
-                    <span class="slds-vertical-tabs__link slds-truncate"
-                        title={allMembersLabel}>{allMembersLabel}</span>
-                </li>
-                <template for:each={groups} for:item="group">
-                    <li class="slds-vertical-tabs__nav-item" title={group.name} role="presentation" key={group.id}
-                        onclick={handleTabClick} data-group-index={group.index} ondrop={handleDrop}
-                        ondragover={handleDragOver}>
-                        <div class="slds-truncate slds-vertical-tabs__link slds-grid slds-wrap slds-grid_align-spread slds-m-bottom_none"
-                            title={group.name}>
-                            <span class="slds-col">{group.name}</span>
-                            <input type="color" value={group.colour} class="slds-col colourPicker"
-                                onclick={handleColourPick} onchange={handleColourChange} data-group-index={group.index}>
+    <div class="slds-vertical-tabs">
+        <!-- SIDE BAR TABS -->
+        <ul class="slds-vertical-tabs__nav" role="tablist">
+            <li class="slds-vertical-tabs__nav-item slds-is-active" title={allMembersLabel} role="presentation"
+                onclick={handleTabClick} data-group-index="-1" ondrop={handleDrop} ondragover={handleDragOver}>
+                <span class="slds-vertical-tabs__link slds-truncate" title={allMembersLabel}>{allMembersLabel}</span>
+            </li>
+            <template for:each={groups} for:item="group">
+                <li class="slds-vertical-tabs__nav-item" title={group.name} role="presentation" key={group.id}
+                    onclick={handleTabClick} data-group-index={group.index} ondrop={handleDrop}
+                    ondragover={handleDragOver}>
+                    <div class="slds-truncate slds-vertical-tabs__link slds-grid slds-wrap slds-grid_align-spread slds-m-bottom_none"
+                        title={group.name}>
+                        <span class="slds-col">{group.name}</span>
+                        <input type="color" value={group.colour} class="slds-col colourPicker"
+                            onclick={handleColourPick} onchange={handleColourChange} data-group-index={group.index}>
 
-                            <template if:true={adminMode}>
-
-                                <div class="tabActions slds-col slds-size_1-of-1 slds-text-align_center">
-                                    <lightning-button-icon icon-name="utility:edit" size="x-small" variant="container">
-                                    </lightning-button-icon>
-                                    <lightning-button-icon icon-name="utility:delete" size="x-small"
-                                        variant="container">
-                                    </lightning-button-icon>
-                                </div>
-                            </template>
-                        </div>
-                    </li>
-                </template>
-            </ul>
-            <div class="slds-vertical-tabs__content slds-show" role="tabpanel">
-                <template if:true={adminMode}>
-                    <lightning-button-group class="slds-grid slds-grid_align-end">
-                        <lightning-button icon-name="utility:save" label="Save" class="slds-col" onclick={handleSave}></lightning-button>
-                        <lightning-button icon-name="utility:new" label="New Group" class="slds-col"></lightning-button>
-                        <lightning-button icon-name="utility:adduser" label="Add Member" class="slds-col">
-                        </lightning-button>
-                    </lightning-button-group>
-                </template>
-                <template if:true={showAllMembers}>
-                    <div class="slds-grid slds-wrap slds-grid_align-space">
-                        <c-show-members members={members} show-group-membership="true" show-all-members="true" admin-mode={adminMode}>
-                        </c-show-members>
-                        <!--<c-show-members members={allMembers}></c-show-members>-->
-                        <!--
-                    <template for:each={allMembers} for:item="member">
-                        <article key={member.Id}
-                            class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-4 slds-large-size_1-of-6 slds-text-align_center">
-                            <img src={member.User__r.FullPhotoUrl} ondragstart={handleDragStart}
-                                data-user-id={member.User__r.Id} draggable="true">
-                            <p class="slds-text-heading_medium">{member.User__r.Name}</p>
-                            <template if:true={member.groupName}>
-                                <p class="slds-text-heading_small slds-badge" style={member.backgroundColour}>
-                                    {member.groupName}</p>
-                            </template>
-                            <template if:false={member.groupName}>
-                                <p class="slds-text-body_regular slds-text-color_error">{noGroupLabel}</p>
-                            </template>
-                        </article>
-                    </template>
-                    -->
+                        <template if:true={adminMode}>
+                            <div class="tabActions slds-col slds-size_1-of-1 slds-text-align_center">
+                                <lightning-button-icon icon-name="utility:edit" size="x-small" variant="container">
+                                </lightning-button-icon>
+                                <lightning-button-icon icon-name="utility:delete" size="x-small" variant="container">
+                                </lightning-button-icon>
+                            </div>
+                        </template>
                     </div>
-                </template>
-                <template if:false={showAllMembers}>
-                    <c-show-members members={currentGroupMembers} show-group-membership="true" show-all-members="false" admin-mode={adminMode}></c-show-members>
-                    <!--
+                </li>
+            </template>
+        </ul>
+        <!-- CONTENT PANE -->
+        <div class="slds-vertical-tabs__content slds-show" role="tabpanel">
+            <template if:true={adminMode}>
+                <lightning-button-group class="slds-grid slds-grid_align-end slds-p-bottom_small">
+                    <lightning-button icon-name="utility:save" label="Save" class="slds-col" onclick={handleSave}>
+                    </lightning-button>
+                    <lightning-button icon-name="utility:new" label="New Group" class="slds-col" onclick={handleNewGroupModalOpen}></lightning-button>
+                    <lightning-button icon-name="utility:adduser" label="Add Member" class="slds-col">
+                    </lightning-button>
+                </lightning-button-group>
+            </template>
+            <template if:true={showAllMembers}>
                 <div class="slds-grid slds-wrap slds-grid_align-space">
-                    <template for:each={currentGroupMembers} for:item="member">
-                        <article key={member.id}
-                            class="slds-col slds-size_1-of-1 slds-small-size_1-of-2 slds-medium-size_1-of-4 slds-large-size_1-of-6 slds-text-align_center">
-                            <img src={member.photoUrl} ondragstart={handleDragStart} data-user-id={member.id}
-                                draggable="true">
-                            <p class="slds-text-heading_medium">{member.name}</p>
-                        </article>
-                    </template>
+                    <c-show-members members={members} show-group-membership="true" show-all-members="true"
+                        admin-mode={adminMode}>
+                    </c-show-members>
                 </div>
-                -->
-                </template>
-            </div>
+            </template>
+            <template if:false={showAllMembers}>
+                <c-show-members members={currentGroupMembers} show-group-membership="true" show-all-members="false"
+                    admin-mode={adminMode}></c-show-members>
+            </template>
         </div>
-    </template>
+    </div>
+
+    <c-modal class="newGroupModal" modal-header="Add Group" modal-save-handler={handleNewGroupModalSave}>
+        <lightning-input label="Group Name" required></lightning-input>
+    </c-modal>
+
+    <c-lwc-modal onsave={handleNewGroupModalSave}>
+        <lightning-input label="Group Name" required></lightning-input>
+    </c-lwc-modal>
 </template>

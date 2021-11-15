@@ -1,12 +1,16 @@
 <template>
-    <template if:true={isLoading}>
+    <div class="slds-theme_default">
+        <!-- <template if:true={isLoading}>
         <lightning-spinner alternative-text="Loading"></lightning-spinner>
-    </template>
-    <span ondragover={handleDragOver} ondrop={handleDrop}>
-        <lightning-card title="Upload CSV RFQ file">
-            <div class="slds-p-left_medium">
-                Drag file here
-            </div>
-        </lightning-card>
-    </span>
+    </template> -->
+        <lightning-input label="Enter name for Knowledge Day" class="knowledgeDayName slds-p-around_x-small" required></lightning-input>
+        <lightning-input label="Demo Email String" class="demoEmailString slds-p-around_x-small" field-level-help="What will come after the @ sign in username@orgname.com" required></lightning-input>
+        <span ondragover={handleDragOver} ondrop={handleDrop}>
+            <lightning-card title="Upload Knowledge Day Members from CSV" icon-name="utility:upload">
+                <div class="slds-p-left_medium">
+                    Drag file here
+                </div>
+            </lightning-card>
+        </span>
+    </div>
 </template>

@@ -12,6 +12,7 @@ img {
 
 .slds-vertical-tabs__nav-item:hover .tabActions {
     display: block;
+    /* transition: all 1s; */
 }
 
 /*

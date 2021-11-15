@@ -9,9 +9,12 @@ img {
 }
 
 .reportButton {
-    display: none;
+    /* display: none; */
+    opacity: 0;
 }
 
 article:hover .reportButton {
-    display:block;
+    /* display:block; */
+    opacity: 1;
+    transition: opacity .75s;
 }

@@ -14,6 +14,7 @@
         <targetConfig targets="lightningCommunity__Default">
             <property name="knowledgeDayId" label="Knowledge Day ID" type="String"/>
             <property name="adminMode" label="Admin Mode" type="boolean"/>
+            <property name="showTabs" label="Show Tabs" type="boolean"/>
         </targetConfig>
         <targetConfig targets="lightning__RecordPage">
             <property name="adminMode" label="Admin Mode" type="boolean"/>

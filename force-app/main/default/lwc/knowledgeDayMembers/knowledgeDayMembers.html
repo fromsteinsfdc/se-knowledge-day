@@ -1,3 +1,4 @@
+<!-- sldsValidatorIgnore -->
 <template>
     <template if:true={isLoading}>
         <lightning-spinner></lightning-spinner>
@@ -16,14 +17,14 @@
                     <div class="slds-truncate slds-vertical-tabs__link slds-grid slds-wrap slds-grid_align-spread slds-m-bottom_none"
                         title={group.name}>
                         <span class="slds-col">{group.name}</span>
-                        <input type="color" value={group.colour} class="slds-col colourPicker"
-                            onclick={handleColourPick} onchange={handleColourChange} data-group-index={group.index}>
-
+                        <input type="color" value={group.colour} class="slds-col colourPicker" name="colourPicker"
+                            onchange={handleColourChange} data-group-index={group.index}>
+                            <!-- onclick={handleColourPick}  -->
                         <template if:true={adminMode}>
-                            <div class="tabActions slds-col slds-size_1-of-1 slds-text-align_center">
-                                <lightning-button-icon icon-name="utility:edit" size="x-small" variant="container">
+                            <div class="tabActions slds-col slds-size_1-of-1">
+                                <lightning-button-icon icon-name="utility:edit" size="x-small" variant="container" name="edit">
                                 </lightning-button-icon>
-                                <lightning-button-icon icon-name="utility:delete" size="x-small" variant="container">
+                                <lightning-button-icon icon-name="utility:delete" size="x-small" variant="container" name="delete">
                                 </lightning-button-icon>
                             </div>
                         </template>
@@ -44,23 +45,26 @@
             </template>
             <template if:true={showAllMembers}>
                 <div class="slds-grid slds-wrap slds-grid_align-space">
-                    <c-show-members members={members} show-group-membership="true" show-all-members="true"
+                    <c-show-members members={members} show-group-membership is-all-members
                         admin-mode={adminMode}>
                     </c-show-members>
                 </div>
             </template>
             <template if:false={showAllMembers}>
-                <c-show-members members={currentGroupMembers} show-group-membership="true" show-all-members="false"
+                <c-show-members members={currentGroupMembers} show-group-membership
                     admin-mode={adminMode}></c-show-members>
             </template>
         </div>
     </div>
 
-    <c-modal class="newGroupModal" modal-header="Add Group" modal-save-handler={handleNewGroupModalSave}>
+    <!-- <c-modal class="newGroupModal" modal-header="Add Group" modal-save-handler={handleNewGroupModalSave}>
         <lightning-input label="Group Name" required></lightning-input>
-    </c-modal>
+    </c-modal> -->
 
-    <c-lwc-modal onsave={handleNewGroupModalSave}>
-        <lightning-input label="Group Name" required></lightning-input>
+    <c-lwc-modal class="newGroupModal" header="Add New Group" onconfirm={handleNewGroupModalSave} confirm-button-label="Add Group">
+        <lightning-input label="Enter New Group Name" required></lightning-input>
     </c-lwc-modal>
+
+    <c-lwc-modal class="confirmation" confirmation={confirmation} onbuttonclick={handleModalButtonClick}></c-lwc-modal>
+
 </template>

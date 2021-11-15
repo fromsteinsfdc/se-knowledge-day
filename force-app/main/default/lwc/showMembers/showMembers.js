@@ -7,20 +7,23 @@ import getVotingGroups from '@salesforce/apex/KnowledgeDayController.getVotingGr
 import getVotingGroupMembers from '@salesforce/apex/KnowledgeDayController.getVotingGroupMembers';
 
 export default class ShowMembers extends NavigationMixin(LightningElement) {
-    @api recordId;
+    // @api recordId;
     @api members = [];
     @api showGroupMembership;
     @api showAllMembers;
     @api adminMode;
+    @api isAllMembers;
     //noGroupLabel = 'The Decider';
     noGroupLabel;
 
-    get showGroup() {
-        return this.showGroupMembership === 'true';
-    }
-    get showAll() {
-        return this.showAllMembers === 'true';
-    }
+    @api userId;
+
+    // get showGroup() {
+    //     return this.showGroupMembership === 'true';
+    // }
+    // get showAll() {
+    //     return this.showAllMembers === 'true';
+    // }
 
     presenterImageWidth = 200;
     presenterImageHeight = 200;
@@ -34,15 +37,11 @@ export default class ShowMembers extends NavigationMixin(LightningElement) {
     }
 
     get presenters() {
-        console.log('in get presenters, '+ this.showAllMembers);
-        if (this.showAllMembers === 'true')
-            return this.members;
+        console.log('in get presenters, '+ this.isAllMembers);
         return this.members.filter(el => { return el.isPresenter });        
     }
 
     get nonPresenters() {
-        if (this.showAllMembers === 'true')
-            return this.members;
         return this.members.filter(el => { return !el.isPresenter });        
     }
 
@@ -53,7 +52,7 @@ export default class ShowMembers extends NavigationMixin(LightningElement) {
     }
 
     get showReportButton() {
-        if (this.showAllMembers === 'true')
+        if (this.isAllMembers)
             return false;
         //return true;
         for (let member of this.members) {
